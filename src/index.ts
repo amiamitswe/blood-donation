@@ -10,7 +10,7 @@ app.use(express.json());
 dotenv.config();
 
 // app handler
-app.use('/donar', donarRouter);
+app.use('/donar/', donarRouter);
 
 // // // mongodb connection with database
 mongoose.connect('mongodb://localhost/bloodDonar')
