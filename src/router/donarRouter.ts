@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 const router = express.Router();
 
-import { addDonarMiddleware } from '../middleware/donarMiddleware';
-import { saveDonarHandler } from '../handler/donarHandler';
+import { addDonarMiddleware, donarDetailsMiddleware } from '../middleware/donarMiddleware';
+import { saveDonarHandler, showAllDonarHandler, showDonarDetailsHandler } from '../handler/donarHandler';
 
-router.get('/', (req: Request, res: Response) => {
-  res.status(200).json({ success: 'success !!!!!!' });
-});
+router.get('/', showAllDonarHandler);
+
+router.get('/:donar', donarDetailsMiddleware, showDonarDetailsHandler);
 
 router.post('/add', addDonarMiddleware, saveDonarHandler);
 

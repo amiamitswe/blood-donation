@@ -12,5 +12,6 @@
   },
   "eslint.alwaysShowStatus": true,
   // play sound on eslint error
-  "editor.accessibilitySupport": "off"
+  "editor.accessibilitySupport": "off",
+  "cSpell.words": ["donares"]
 }

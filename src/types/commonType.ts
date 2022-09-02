@@ -1,5 +1,6 @@
 interface IError { status: number, message: string; }
 interface IDonar {
+  [x: string]: any;
   name: string,
   blood: string,
   mobile: string;
@@ -8,6 +9,7 @@ interface IDonar {
   lastDonation?: Date;
   status?: ["active", "inactive"],
   aboutMe: string;
+  address: string;
   disease: [
     string
   ],
