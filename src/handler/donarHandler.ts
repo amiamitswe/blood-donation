@@ -1,6 +1,6 @@
 import express, { Request, Response, RequestHandler } from 'express';
 import mongoose from 'mongoose';
-import { checkIsEligible } from '../helper/helper';
+import { checkIsEligible, getAge } from '../helper/helper';
 import { donarSchemas } from '../schemas/donarSchemas';
 import { IDonar } from '../types/commonType';
 
@@ -37,12 +37,12 @@ export const saveDonarHandler: RequestHandler = async (req, res, next) => {
 // get all donar
 export const showAllDonarHandler: RequestHandler = async (req, res, next) => {
   try {
-    const getAllDonar = await DonarModel.find({}, "name blood status address lastDonation dob");
+    const getAllDonar = await DonarModel.find({}, "name blood status address lastDonation dob image");
 
     if (getAllDonar && getAllDonar.length > 0) {
       const finalAllDonar = getAllDonar?.map((donarData: IDonar) => {
         const donar = donarData.toJSON();
-        return { ...donar, isEligible: checkIsEligible(donar.lastDonation) && checkIsEligible(donar.dob, 6575) };
+        return { ...donar, isEligible: checkIsEligible(donar.lastDonation) && checkIsEligible(donar.dob, 6575), age: getAge(donar.dob) };
       });
 
       res.status(200).json({
@@ -77,10 +77,10 @@ export const showDonarDetailsHandler: RequestHandler = async (req, res, next) =>
       const getDonarDetails = await DonarModel.findById(req.params.donar).select({ __v: 0 });
       const donarDetails = getDonarDetails.toJSON();
       // @ts-ignore
-      const finalDonarDetails = { ...donarDetails, isEligible: checkIsEligible(donarDetails.lastDonation) };
+      const finalDonarDetails = { ...donarDetails, isEligible: checkIsEligible(donarDetails.lastDonation) && checkIsEligible(donarDetails.dob, 6575), age: getAge(donarDetails.dob) };
 
       if (getDonarDetails) {
-        res.status(200).json({ message: 'donar fetch success', donar: finalDonarDetails });
+        res.status(200).json({ message: 'donar fetch success', data: finalDonarDetails });
       }
       else {
         res.status(200).json({
