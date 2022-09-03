@@ -68,22 +68,36 @@ export const showAllDonarHandler: RequestHandler = async (req, res, next) => {
 // get donar details
 export const showDonarDetailsHandler: RequestHandler = async (req, res, next) => {
   try {
-    const getDonarDetails = await DonarModel.find({ _id: req.params.donar }).select({ __v: 0 });
-    const donarDetails = getDonarDetails[0].toJSON();
+    // // // comment --- start
+    const allDonar = await DonarModel.find({});
+    const isDonarIdExist = allDonar.findIndex((donar: IDonar) => donar._id.toString() === req.params.donar);
+    if (isDonarIdExist > -1) {
+      // // // comment --- end
 
-    // @ts-ignore
-    const finalDonarDetails = { ...donarDetails, isEligible: checkIsEligible(donarDetails.lastDonation) };
+      const getDonarDetails = await DonarModel.findById(req.params.donar).select({ __v: 0 });
+      const donarDetails = getDonarDetails.toJSON();
+      // @ts-ignore
+      const finalDonarDetails = { ...donarDetails, isEligible: checkIsEligible(donarDetails.lastDonation) };
 
-
-    if (getDonarDetails && getDonarDetails.length === 1) {
-      res.status(200).json({ message: 'donar fetch success', donar: finalDonarDetails });
+      if (getDonarDetails) {
+        res.status(200).json({ message: 'donar fetch success', donar: finalDonarDetails });
+      }
+      else {
+        res.status(200).json({
+          error: "No donar found",
+        });
+      }
     }
+    // // // comment --- start
     else {
       res.status(200).json({
-        error: "no donar found",
+        error: "No donar found",
       });
     }
   }
+  // // // comment --- end
+
+  // // error throw for "e,a,d,f,c,b" with last digit "631259a1e4f76b2d61c10ccb"
   catch (err) {
     res.status(500).json({
       error: "There are server error !!!!",

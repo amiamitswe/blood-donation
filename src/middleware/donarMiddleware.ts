@@ -1,4 +1,6 @@
 import { Request, RequestHandler, Response } from 'express';
+import mongoose from 'mongoose';
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const bloodGroup = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
@@ -31,8 +33,9 @@ export const addDonarMiddleware = (req: Request, res: Response, next: any) => {
 };
 
 export const donarDetailsMiddleware: RequestHandler = (req, res, next) => {
-  const donarId = typeof req.params.donar === 'string' && req.params.donar.length === 24 ? req.params.donar : false;
 
-  if (donarId) next();
+  const donarId = typeof req.params.donar === 'string' && req.params.donar.length === 24 && ObjectId.isValid(req.params.donar) ? req.params.donar : false;
+
+  if (donarId && donarId?.match(/^[0-9a-fA-F]{24}$/)) next();
   else res.status(400).json({ message: 'invalid donar id' });
 };
