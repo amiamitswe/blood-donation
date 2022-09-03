@@ -6,6 +6,10 @@ export const donarSchemas = new mongoose.Schema<IDonar>({
     type: String,
     required: true
   },
+  image: {
+    type: String,
+    default: 'https://freepngimg.com/thumb/youtube/62644-profile-account-google-icons-computer-user-iconfinder.png'
+  },
   blood: {
     type: String,
     required: true
@@ -16,6 +20,10 @@ export const donarSchemas = new mongoose.Schema<IDonar>({
   },
   email: {
     type: String,
+    required: true
+  },
+  dob: {
+    type: Date,
     required: true
   },
   createAt: {

@@ -5,6 +5,7 @@ interface IDonar {
   blood: string,
   mobile: string;
   email: string;
+  dob?: Date;
   createAt?: Date;
   lastDonation?: Date;
   status?: ["active", "inactive"],

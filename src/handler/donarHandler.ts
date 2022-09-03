@@ -37,12 +37,12 @@ export const saveDonarHandler: RequestHandler = async (req, res, next) => {
 // get all donar
 export const showAllDonarHandler: RequestHandler = async (req, res, next) => {
   try {
-    const getAllDonar = await DonarModel.find({}, "name blood status address lastDonation");
+    const getAllDonar = await DonarModel.find({}, "name blood status address lastDonation dob");
 
     if (getAllDonar && getAllDonar.length > 0) {
       const finalAllDonar = getAllDonar?.map((donarData: IDonar) => {
         const donar = donarData.toJSON();
-        return { ...donar, isEligible: checkIsEligible(donar.lastDonation) };
+        return { ...donar, isEligible: checkIsEligible(donar.lastDonation) && checkIsEligible(donar.dob, 6575) };
       });
 
       res.status(200).json({
@@ -98,6 +98,52 @@ export const showDonarDetailsHandler: RequestHandler = async (req, res, next) =>
   // // // comment --- end
 
   // // error throw for "e,a,d,f,c,b" with last digit "631259a1e4f76b2d61c10ccb"
+  catch (err) {
+    res.status(500).json({
+      error: "There are server error !!!!",
+      err
+    });
+  }
+};
+
+// change active status
+export const changeStatusHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const getUser = await DonarModel.findById(req.body.donar, "status");
+
+    if (getUser.status !== req.body.status) {
+      const updateStatus = await DonarModel.findOneAndUpdate({ _id: req.body.donar }, { $set: { status: req.body.status } }, { new: true });
+
+      if (updateStatus.status === req.body.status) {
+        res.status(200).json({ message: "Status update successful" });
+      }
+      else {
+        res.status(500).json({ error: "There are server error !!!!", });
+      }
+    }
+    else {
+      res.status(400).json({ error: "Nothing to change", });
+    }
+  }
+  catch (err) {
+    res.status(500).json({
+      error: "There are server error !!!!",
+      err
+    });
+  }
+};
+
+// change dinar image
+export const changeImageHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const updateStatus = await DonarModel.updateOne({ _id: req.body.donar }, { $set: { image: req.body.image } });
+    if (updateStatus) {
+      res.status(200).json({ message: "Status update successful" });
+    }
+    else {
+      res.status(500).json({ error: "There are server error !!!!", });
+    }
+  }
   catch (err) {
     res.status(500).json({
       error: "There are server error !!!!",
