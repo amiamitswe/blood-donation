@@ -1,9 +1,10 @@
 import express, { Request, Response, Application, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import { IError } from './types/commonType';
 
 import donarRouter from './router/donarRouter';
+import userRouter from './router/userRouter';
 
 const app: Application = express();
 app.use(express.json());
@@ -11,10 +12,12 @@ dotenv.config();
 
 // app handler
 app.use('/donar/', donarRouter);
+app.use('/user', userRouter);
 
 // // // mongodb connection with database
-mongoose.connect('mongodb://localhost/bloodDonar')
-  .then(() => console.log("Database connection successful !!!"))
+mongoose
+  .connect('mongodb://localhost/bloodDonar')
+  .then(() => console.log('Database connection successful !!!'))
   .catch((err) => console.log(err));
 
 // default error handler

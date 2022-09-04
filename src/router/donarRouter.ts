@@ -1,10 +1,20 @@
 import express, { Request, Response } from 'express';
 const router = express.Router();
-const cors = require('cors');
+import cors from 'cors';
 
-import { addDonarMiddleware, donarDetailsMiddleware, updateDonarImageMiddleware, updateDonarStatusMiddleware } from '../middleware/donarMiddleware';
-import { changeImageHandler, changeStatusHandler, saveDonarHandler, showAllDonarHandler, showDonarDetailsHandler } from '../handler/donarHandler';
-
+import {
+  addDonarMiddleware,
+  donarDetailsMiddleware,
+  updateDonarImageMiddleware,
+  updateDonarStatusMiddleware,
+} from '../middleware/donarMiddleware';
+import {
+  changeImageHandler,
+  changeStatusHandler,
+  saveDonarHandler,
+  showAllDonarHandler,
+  showDonarDetailsHandler,
+} from '../handler/donarHandler';
 
 router.get('/', cors(), showAllDonarHandler);
 

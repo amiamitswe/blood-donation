@@ -5,7 +5,7 @@ import { donarSchemas } from '../schemas/donarSchemas';
 import { IDonar } from '../types/commonType';
 
 // create donar modal
-const DonarModel: any = mongoose.model<IDonar>("Donar", donarSchemas);
+const DonarModel = mongoose.model<IDonar>('Donar', donarSchemas);
 
 // save new donar
 export const saveDonarHandler: RequestHandler = async (req, res, next) => {
@@ -14,22 +14,20 @@ export const saveDonarHandler: RequestHandler = async (req, res, next) => {
 
     if (checkIsAlreadyThere && checkIsAlreadyThere?.length > 0) {
       res.status(400).json({
-        error: "Donar is already there !!!",
+        error: 'Donar is already there !!!',
       });
-    }
-    else {
+    } else {
       const newDonar = new DonarModel(req.body);
       const result = await newDonar.save();
       res.status(200).json({
-        message: "Donar inserted successfully !!!",
-        result
+        message: 'Donar inserted successfully !!!',
+        result,
       });
     }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({
-      error: "There was a server side error !!!",
-      err
+      error: 'There was a server side error !!!',
+      err,
     });
   }
 };
@@ -37,30 +35,35 @@ export const saveDonarHandler: RequestHandler = async (req, res, next) => {
 // get all donar
 export const showAllDonarHandler: RequestHandler = async (req, res, next) => {
   try {
-    const getAllDonar = await DonarModel.find({}, "name blood status address lastDonation dob image");
+    const getAllDonar = await DonarModel.find(
+      {},
+      'name blood status address lastDonation dob image'
+    );
 
     if (getAllDonar && getAllDonar.length > 0) {
       const finalAllDonar = getAllDonar?.map((donarData: IDonar) => {
         const donar = donarData.toJSON();
-        return { ...donar, isEligible: checkIsEligible(donar.lastDonation) && checkIsEligible(donar.dob, 6575), age: getAge(donar.dob) };
+        return {
+          ...donar,
+          isEligible: checkIsEligible(donar.lastDonation) && checkIsEligible(donar.dob, 6575),
+          age: getAge(donar.dob),
+        };
       });
 
       res.status(200).json({
-        message: "Donares fetch successful",
+        message: 'Donares fetch successful',
         donarCount: finalAllDonar.length,
-        donares: finalAllDonar
+        donares: finalAllDonar,
       });
-    }
-    else {
+    } else {
       res.status(200).json({
-        message: "No donar available",
+        message: 'No donar available',
       });
     }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({
-      error: "There was a server side error !!!",
-      err
+      error: 'There was a server side error !!!',
+      err,
     });
   }
 };
@@ -70,38 +73,42 @@ export const showDonarDetailsHandler: RequestHandler = async (req, res, next) =>
   try {
     // // // comment --- start
     const allDonar = await DonarModel.find({});
-    const isDonarIdExist = allDonar.findIndex((donar: IDonar) => donar._id.toString() === req.params.donar);
+    const isDonarIdExist = allDonar.findIndex(
+      (donar: IDonar) => donar._id.toString() === req.params.donar
+    );
     if (isDonarIdExist > -1) {
       // // // comment --- end
 
-      const getDonarDetails = await DonarModel.findById(req.params.donar).select({ __v: 0 });
+      const getDonarDetails: any = await DonarModel.findById(req.params.donar).select({ __v: 0 });
       const donarDetails = getDonarDetails.toJSON();
-      // @ts-ignore
-      const finalDonarDetails = { ...donarDetails, isEligible: checkIsEligible(donarDetails.lastDonation) && checkIsEligible(donarDetails.dob, 6575), age: getAge(donarDetails.dob) };
+      const finalDonarDetails = {
+        ...donarDetails,
+        isEligible:
+          checkIsEligible(donarDetails.lastDonation) && checkIsEligible(donarDetails.dob, 6575),
+        age: getAge(donarDetails.dob),
+      };
 
       if (getDonarDetails) {
         res.status(200).json({ message: 'donar fetch success', data: finalDonarDetails });
-      }
-      else {
+      } else {
         res.status(200).json({
-          error: "No donar found",
+          error: 'No donar found',
         });
       }
     }
     // // // comment --- start
     else {
       res.status(200).json({
-        error: "No donar found",
+        error: 'No donar found',
       });
     }
-  }
-  // // // comment --- end
+  } catch (err) {
+    // // // comment --- end
 
-  // // error throw for "e,a,d,f,c,b" with last digit "631259a1e4f76b2d61c10ccb"
-  catch (err) {
+    // // error throw for "e,a,d,f,c,b" with last digit "631259a1e4f76b2d61c10ccb"
     res.status(500).json({
-      error: "There are server error !!!!",
-      err
+      error: 'There are server error !!!!',
+      err,
     });
   }
 };
@@ -109,26 +116,27 @@ export const showDonarDetailsHandler: RequestHandler = async (req, res, next) =>
 // change active status
 export const changeStatusHandler: RequestHandler = async (req, res, next) => {
   try {
-    const getUser = await DonarModel.findById(req.body.donar, "status");
+    const getUser: any = await DonarModel.findById(req.body.donar, 'status');
 
     if (getUser.status !== req.body.status) {
-      const updateStatus = await DonarModel.findOneAndUpdate({ _id: req.body.donar }, { $set: { status: req.body.status } }, { new: true });
+      const updateStatus: any = await DonarModel.findOneAndUpdate(
+        { _id: req.body.donar },
+        { $set: { status: req.body.status } },
+        { new: true }
+      );
 
       if (updateStatus.status === req.body.status) {
-        res.status(200).json({ message: "Status update successful" });
+        res.status(200).json({ message: 'Status update successful' });
+      } else {
+        res.status(500).json({ error: 'There are server error !!!!' });
       }
-      else {
-        res.status(500).json({ error: "There are server error !!!!", });
-      }
+    } else {
+      res.status(400).json({ error: 'Nothing to change' });
     }
-    else {
-      res.status(400).json({ error: "Nothing to change", });
-    }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({
-      error: "There are server error !!!!",
-      err
+      error: 'There are server error !!!!',
+      err,
     });
   }
 };
@@ -136,18 +144,19 @@ export const changeStatusHandler: RequestHandler = async (req, res, next) => {
 // change dinar image
 export const changeImageHandler: RequestHandler = async (req, res, next) => {
   try {
-    const updateStatus = await DonarModel.updateOne({ _id: req.body.donar }, { $set: { image: req.body.image } });
+    const updateStatus = await DonarModel.updateOne(
+      { _id: req.body.donar },
+      { $set: { image: req.body.image } }
+    );
     if (updateStatus) {
-      res.status(200).json({ message: "Status update successful" });
+      res.status(200).json({ message: 'Status update successful' });
+    } else {
+      res.status(500).json({ error: 'There are server error !!!!' });
     }
-    else {
-      res.status(500).json({ error: "There are server error !!!!", });
-    }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({
-      error: "There are server error !!!!",
-      err
+      error: 'There are server error !!!!',
+      err,
     });
   }
 };
