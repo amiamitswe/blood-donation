@@ -1,8 +1,9 @@
 import e, { RequestHandler } from 'express';
 import mongoose from 'mongoose';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { userSchemas } from '../schemas/userSchemas';
 import { ISIgnUp } from '../types/commonType';
+import jwt from 'jsonwebtoken';
 
 // create user model
 const UserModel = mongoose.model<ISIgnUp>('User', userSchemas);
@@ -38,11 +39,42 @@ export const signupHandler: RequestHandler = async (req, res, next) => {
         },
       });
     }
-    // if(checkIsUserExist)
   } catch (err) {
     res.status(500).json({
       error: 'There was a server side error !!!',
       err,
     });
+  }
+};
+
+export const loginHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const loginUserInfo = await UserModel.find({
+      $or: [
+        { username: req.body.username.toLowerCase() },
+        { email: req.body.username.toLowerCase() },
+      ],
+    });
+
+    if (loginUserInfo && loginUserInfo.length === 1) {
+      const loginUserData = loginUserInfo[0];
+      const isValidPassword = await compare(req.body.password, loginUserData.password);
+
+      if (isValidPassword) {
+        // generate token for jwt
+        const token = jwt.sign(
+          { username: loginUserData.username, userId: loginUserData._id },
+          process.env.JWT_SECRET as string,
+          { expiresIn: '1h' }
+        );
+        res.status(200).json({ message: 'Login Success!!!', token });
+      } else {
+        res.status(401).json({ error: 'Authentication Failed' });
+      }
+    } else {
+      res.status(401).json({ error: 'Authentication Failed' });
+    }
+  } catch {
+    res.status(401).json({ error: 'Authentication Failed' });
   }
 };

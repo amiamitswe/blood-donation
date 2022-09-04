@@ -1,10 +1,13 @@
 import express from 'express';
-import { signupHandler } from '../handler/userHandler';
-import { signupMiddleware } from '../middleware/userMiddleware';
+import { signupHandler, loginHandler } from '../handler/userHandler';
+import { signupMiddleware, loginMiddleware } from '../middleware/userMiddleware';
 
 const router = express.Router();
 
 // create user
-router.post('/', signupMiddleware, signupHandler);
+router.post('/signup', signupMiddleware, signupHandler);
+
+// login user
+router.post('/login', loginMiddleware, loginHandler);
 
 export default router;
