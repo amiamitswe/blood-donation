@@ -1,3 +1,5 @@
+import { Date } from "mongoose";
+
 interface IError { status: number, message: string; }
 interface IDonar {
   [x: string]: any;
@@ -23,5 +25,14 @@ interface IDonar {
   };
 }
 
+interface ISIgnUp {
+  createAt?: Date
+  updateAt?: Date
+  email: string
+  password: string
+  username: string
+  role?: ['admin', 'superAdmin', 'user']
+}
 
-export { IError, IDonar };
+
+export { IError, IDonar, ISIgnUp };

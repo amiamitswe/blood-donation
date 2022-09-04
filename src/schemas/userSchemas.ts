@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import { ISIgnUp } from '../types/commonType';
 
-export const userSchemas = new mongoose.Schema({
+export const userSchemas = new mongoose.Schema<ISIgnUp>({
   email: {
     type: String,
     required: true,
@@ -16,6 +17,16 @@ export const userSchemas = new mongoose.Schema({
   },
   password: {
     type: String,
+    required: true,
+  },
+  createAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
+  updateAt: {
+    type: Date,
+    default: Date.now,
     required: true,
   },
 });

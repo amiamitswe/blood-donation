@@ -55,6 +55,7 @@ export const addDonarMiddleware = (req: Request, res: Response, next: any) => {
 
 // get donar details check donar id middleware
 export const donarDetailsMiddleware: RequestHandler = (req, res, next) => {
+  // var objId = new ObjectId( (param.length < 12) ? "123456789012" : param );
   const donarId =
     typeof req.params.donar === 'string' &&
     req.params.donar.length === 24 &&
