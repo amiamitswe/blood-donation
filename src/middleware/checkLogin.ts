@@ -12,8 +12,6 @@ const checkLogin: RequestHandler = (req, res, next) => {
     req.username = decode.username;
     req.userId = decode.userId;
 
-    console.log(decode);
-
     next();
   } catch {
     next('Authorization Failed !!!');
