@@ -71,15 +71,9 @@ export const showAllDonarHandler: RequestHandler = async (req, res, next) => {
 // get donar details
 export const showDonarDetailsHandler: RequestHandler = async (req, res, next) => {
   try {
-    // // // comment --- start
-    const allDonar = await DonarModel.find({});
-    const isDonarIdExist = allDonar.findIndex(
-      (donar: IDonar) => donar._id.toString() === req.params.donar
-    );
-    if (isDonarIdExist > -1) {
-      // // // comment --- end
+    const getDonarDetails: any = await DonarModel.findById(req.params.donar).select({ __v: 0 });
 
-      const getDonarDetails: any = await DonarModel.findById(req.params.donar).select({ __v: 0 });
+    if (getDonarDetails !== null) {
       const donarDetails = getDonarDetails.toJSON();
       const finalDonarDetails = {
         ...donarDetails,
@@ -88,25 +82,14 @@ export const showDonarDetailsHandler: RequestHandler = async (req, res, next) =>
         age: getAge(donarDetails.dob),
       };
 
-      if (getDonarDetails) {
-        res.status(200).json({ message: 'donar fetch success', data: finalDonarDetails });
-      } else {
-        res.status(200).json({
-          error: 'No donar found',
-        });
-      }
-    }
-    // // // comment --- start
-    else {
-      res.status(200).json({
+      res.status(200).json({ message: 'donar fetch success', data: finalDonarDetails });
+    } else {
+      res.status(400).json({
         error: 'No donar found',
       });
     }
   } catch (err) {
-    // // // comment --- end
-
-    // // error throw for "e,a,d,f,c,b" with last digit "631259a1e4f76b2d61c10ccb"
-    res.status(500).json({
+    res.status(400).json({
       error: 'There are server error !!!!',
       err,
     });
@@ -116,22 +99,20 @@ export const showDonarDetailsHandler: RequestHandler = async (req, res, next) =>
 // change active status
 export const changeStatusHandler: RequestHandler = async (req, res, next) => {
   try {
-    const getUser: any = await DonarModel.findById(req.body.donar, 'status');
+    const updateStatus: any = await DonarModel.findOneAndUpdate(
+      { _id: req.body.donar, $or: [{ status: { $ne: req.body.status } }] },
+      { $set: { status: req.body.status } },
+      { new: true }
+    );
 
-    if (getUser.status !== req.body.status) {
-      const updateStatus: any = await DonarModel.findOneAndUpdate(
-        { _id: req.body.donar },
-        { $set: { status: req.body.status } },
-        { new: true }
-      );
-
+    if (updateStatus !== null) {
       if (updateStatus.status === req.body.status) {
         res.status(200).json({ message: 'Status update successful' });
       } else {
-        res.status(500).json({ error: 'There are server error !!!!' });
+        res.status(500).json({ error: 'Server error' });
       }
     } else {
-      res.status(400).json({ error: 'Nothing to change' });
+      res.status(400).json({ message: 'Nothing to change or user not available' });
     }
   } catch (err) {
     res.status(500).json({

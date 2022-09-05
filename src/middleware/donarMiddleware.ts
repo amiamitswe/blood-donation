@@ -55,7 +55,6 @@ export const addDonarMiddleware = (req: Request, res: Response, next: any) => {
 
 // get donar details check donar id middleware
 export const donarDetailsMiddleware: RequestHandler = (req, res, next) => {
-  // var objId = new ObjectId( (param.length < 12) ? "123456789012" : param );
   const donarId =
     typeof req.params.donar === 'string' &&
     req.params.donar.length === 24 &&
@@ -81,10 +80,10 @@ export const updateDonarStatusMiddleware: RequestHandler = (req, res, next) => {
       : false;
 
   if (donarId && status) next();
-  else res.status(400).json({ message: 'Field required' });
+  else res.status(400).json({ message: 'Field required or invalid id' });
 };
 
-// update donar status check donar id and status middleware
+// update donar image check donar id and status middleware
 export const updateDonarImageMiddleware: RequestHandler = (req, res, next) => {
   const donarId =
     typeof req.body.donar === 'string' &&
@@ -95,5 +94,5 @@ export const updateDonarImageMiddleware: RequestHandler = (req, res, next) => {
   const image = typeof req.body.image === 'string' ? req.body.image : false;
 
   if (donarId && image) next();
-  else res.status(400).json({ message: 'Field required' });
+  else res.status(400).json({ message: 'Field required or invalid id' });
 };
