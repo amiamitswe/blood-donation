@@ -125,14 +125,15 @@ export const changeStatusHandler: RequestHandler = async (req, res, next) => {
 // change dinar image
 export const changeImageHandler: RequestHandler = async (req, res, next) => {
   try {
-    const updateStatus = await DonarModel.updateOne(
+    const updateStatus = await DonarModel.findOneAndUpdate(
       { _id: req.body.donar },
       { $set: { image: req.body.image } }
     );
-    if (updateStatus) {
-      res.status(200).json({ message: 'Status update successful' });
+
+    if (updateStatus !== null) {
+      res.status(200).json({ message: 'Image update successful' });
     } else {
-      res.status(500).json({ error: 'There are server error !!!!' });
+      res.status(400).json({ error: 'operation failed or user not found' });
     }
   } catch (err) {
     res.status(500).json({

@@ -1,4 +1,6 @@
 import { RequestHandler } from 'express';
+import mongoose from 'mongoose';
+const ObjectId = mongoose.Types.ObjectId;
 
 // signup from validation middleware
 export const signupMiddleware: RequestHandler = (req, res, next) => {
@@ -38,4 +40,17 @@ export const loginMiddleware: RequestHandler = (req, res, next) => {
 
   if (username && password) next();
   else res.status(400).json({ message: 'All fields are required !' });
+};
+
+// logout middleware
+export const logOutMiddleware: RequestHandler = (req, res, next) => {
+  const userId =
+    typeof req.body.userId === 'string' &&
+    req.body.userId.length === 24 &&
+    ObjectId.isValid(req.body.userId)
+      ? req.body.userId
+      : false;
+
+  if (userId) next();
+  else next('User id is not valid');
 };

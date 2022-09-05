@@ -2,19 +2,30 @@
 
 import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import { expireTokenSchemas } from '../schemas/userSchemas';
+import { ILogOutToken } from '../types/commonType';
 
-const checkLogin: RequestHandler = (req, res, next) => {
+const ExpireTokenModel = mongoose.model<ILogOutToken>('Token', expireTokenSchemas);
+
+const checkLogin: RequestHandler = async (req, res, next) => {
   const { authorization } = req.headers;
 
   try {
     const authToken = authorization?.split(' ')[1];
-    const decode: any = jwt.verify(authToken as string, process.env.JWT_SECRET as string);
-    req.username = decode.username;
-    req.userId = decode.userId;
+    const checkTokenIsBlocked = await ExpireTokenModel.findOne({ expireToken: authToken });
 
-    next();
+    if (checkTokenIsBlocked) {
+      next('Authorization Failed !!! 1');
+    } else {
+      const decode: any = jwt.verify(authToken as string, process.env.JWT_SECRET as string);
+      req.username = decode.username;
+      req.userId = decode.userId;
+
+      next();
+    }
   } catch {
-    next('Authorization Failed !!!');
+    next('Authorization Failed !!! 2');
   }
 };
 

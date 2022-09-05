@@ -1,12 +1,13 @@
 import e, { RequestHandler } from 'express';
 import mongoose from 'mongoose';
 import { compare, hash } from 'bcrypt';
-import { userSchemas } from '../schemas/userSchemas';
-import { ISIgnUp } from '../types/commonType';
+import { expireTokenSchemas, userSchemas } from '../schemas/userSchemas';
+import { ILogOutToken, ISIgnUp } from '../types/commonType';
 import jwt from 'jsonwebtoken';
 
 // create user model
 const UserModel = mongoose.model<ISIgnUp>('User', userSchemas);
+const ExpireTokenModel = mongoose.model<ILogOutToken>('Token', expireTokenSchemas);
 
 // signup functionality
 export const signupHandler: RequestHandler = async (req, res, next) => {
@@ -63,7 +64,11 @@ export const loginHandler: RequestHandler = async (req, res, next) => {
       if (isValidPassword) {
         // generate token for jwt
         const token = jwt.sign(
-          { username: loginUserData.username, userId: loginUserData._id },
+          {
+            username: loginUserData.username,
+            userId: loginUserData._id,
+            userType: loginUserData.role,
+          },
           process.env.JWT_SECRET as string,
           { expiresIn: '1h' }
         );
@@ -71,6 +76,24 @@ export const loginHandler: RequestHandler = async (req, res, next) => {
       } else {
         res.status(401).json({ error: 'Authentication Failed' });
       }
+    } else {
+      res.status(401).json({ error: 'Authentication Failed' });
+    }
+  } catch {
+    res.status(401).json({ error: 'Authentication Failed' });
+  }
+};
+
+// logout handler
+export const logoutHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const { authorization } = req.headers;
+    const token = authorization?.split(' ')[1];
+
+    const newExpireToken = new ExpireTokenModel({ expireToken: token });
+    const result = await newExpireToken.save();
+    if (result) {
+      res.status(200).json('Logout success');
     } else {
       res.status(401).json({ error: 'Authentication Failed' });
     }

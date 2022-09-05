@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ISIgnUp } from '../types/commonType';
+import { ILogOutToken, ISIgnUp } from '../types/commonType';
 
 export const userSchemas = new mongoose.Schema<ISIgnUp>({
   email: {
@@ -25,6 +25,18 @@ export const userSchemas = new mongoose.Schema<ISIgnUp>({
     required: true,
   },
   updateAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
+});
+
+export const expireTokenSchemas = new mongoose.Schema<ILogOutToken>({
+  expireToken: {
+    type: String,
+    required: true,
+  },
+  expireAt: {
     type: Date,
     default: Date.now,
     required: true,
