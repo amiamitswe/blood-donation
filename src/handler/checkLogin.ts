@@ -16,16 +16,17 @@ const checkLogin: RequestHandler = async (req, res, next) => {
     const checkTokenIsBlocked = await ExpireTokenModel.findOne({ expireToken: authToken });
 
     if (checkTokenIsBlocked) {
-      next('Authorization Failed !!! 1');
+      next('Authorization Failed !!!');
     } else {
       const decode: any = jwt.verify(authToken as string, process.env.JWT_SECRET as string);
       req.username = decode.username;
       req.userId = decode.userId;
+      req.userType = decode.userType;
 
       next();
     }
   } catch {
-    next('Authorization Failed !!! 2');
+    next('Authorization Failed !!!');
   }
 };
 

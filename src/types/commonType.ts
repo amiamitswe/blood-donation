@@ -31,7 +31,7 @@ interface ISIgnUp {
   email: string;
   password: string;
   username: string;
-  role?: ['admin', 'superAdmin', 'user'];
+  role?: ['admin', 'user'];
 }
 
 interface ILogOutToken { expireToken: string; expireAt: Date; }

@@ -1,7 +1,7 @@
 import express from 'express';
+import checkLogin from '../handler/checkLogin';
 import { signupHandler, loginHandler, logoutHandler } from '../handler/userHandler';
-import checkLogin from '../middleware/checkLogin';
-import { signupMiddleware, loginMiddleware, logOutMiddleware } from '../middleware/userMiddleware';
+import { signupMiddleware, loginMiddleware } from '../middleware/userMiddleware';
 
 const router = express.Router();
 
@@ -12,6 +12,6 @@ router.post('/signup', signupMiddleware, signupHandler);
 router.post('/login', loginMiddleware, loginHandler);
 
 // log out user
-router.post('/logout', checkLogin, logOutMiddleware, logoutHandler);
+router.post('/logout', checkLogin, logoutHandler);
 
 export default router;

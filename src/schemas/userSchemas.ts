@@ -12,7 +12,7 @@ export const userSchemas = new mongoose.Schema<ISIgnUp>({
   },
   role: {
     type: String,
-    enum: ['admin', 'superAdmin', 'user'],
+    enum: ['admin', 'user'],
     default: 'user',
   },
   password: {

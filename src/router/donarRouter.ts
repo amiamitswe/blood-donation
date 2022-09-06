@@ -6,6 +6,7 @@ import {
   addDonarMiddleware,
   donarDetailsMiddleware,
   updateDonarImageMiddleware,
+  updateDonarMiddleware,
   updateDonarStatusMiddleware,
 } from '../middleware/donarMiddleware';
 import {
@@ -14,8 +15,9 @@ import {
   saveDonarHandler,
   showAllDonarHandler,
   showDonarDetailsHandler,
+  updateProfileHandler,
 } from '../handler/donarHandler';
-import checkLogin from '../middleware/checkLogin';
+import checkLogin from '../handler/checkLogin';
 
 router.get('/', cors(), showAllDonarHandler);
 
@@ -26,5 +28,13 @@ router.post('/add', cors(), checkLogin, addDonarMiddleware, saveDonarHandler);
 router.put('/change-status', cors(), checkLogin, updateDonarStatusMiddleware, changeStatusHandler);
 
 router.put('/change-image', cors(), checkLogin, updateDonarImageMiddleware, changeImageHandler);
+
+router.patch(
+  '/update-profile/:donar',
+  cors(),
+  checkLogin,
+  updateDonarMiddleware,
+  updateProfileHandler
+);
 
 export default router;

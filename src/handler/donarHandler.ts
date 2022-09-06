@@ -122,7 +122,7 @@ export const changeStatusHandler: RequestHandler = async (req, res, next) => {
   }
 };
 
-// change dinar image
+// change donar image
 export const changeImageHandler: RequestHandler = async (req, res, next) => {
   try {
     const updateStatus = await DonarModel.findOneAndUpdate(
@@ -134,6 +134,28 @@ export const changeImageHandler: RequestHandler = async (req, res, next) => {
       res.status(200).json({ message: 'Image update successful' });
     } else {
       res.status(400).json({ error: 'operation failed or user not found' });
+    }
+  } catch (err) {
+    res.status(500).json({
+      error: 'There are server error !!!!',
+      err,
+    });
+  }
+};
+
+// update profile
+export const updateProfileHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const updateProfile = await DonarModel.findByIdAndUpdate(req.params.donar, req.body, {
+      new: true,
+    });
+
+    if (updateProfile !== null) {
+      res.status(200).json({ message: 'Donar update successful', data: req.body });
+    } else {
+      res.status(400).json({
+        error: 'No donar found',
+      });
     }
   } catch (err) {
     res.status(500).json({
