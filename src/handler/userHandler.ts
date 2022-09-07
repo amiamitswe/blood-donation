@@ -1,9 +1,10 @@
 import e, { RequestHandler } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Date } from 'mongoose';
 import { compare, hash } from 'bcrypt';
 import { expireTokenSchemas, userSchemas } from '../schemas/userSchemas';
 import { ILogOutToken, ISIgnUp } from '../types/commonType';
 import jwt from 'jsonwebtoken';
+import { checkIsEligible } from '../helper/helper';
 
 // create user model
 const UserModel = mongoose.model<ISIgnUp>('User', userSchemas);
@@ -48,6 +49,7 @@ export const signupHandler: RequestHandler = async (req, res, next) => {
   }
 };
 
+// login handler
 export const loginHandler: RequestHandler = async (req, res, next) => {
   try {
     const loginUserInfo = await UserModel.find({
@@ -97,6 +99,53 @@ export const logoutHandler: RequestHandler = async (req, res, next) => {
     } else {
       res.status(401).json({ error: 'Authentication Failed' });
     }
+  } catch {
+    res.status(401).json({ error: 'Authentication Failed' });
+  }
+};
+
+// change password handler
+export const changePasswordHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const userInfo: any = await UserModel.findById({
+      _id: req.body.userId,
+    }).select({
+      password: 1,
+      updateAt: 1,
+    });
+
+    if (userInfo !== null) {
+      const isEligible = checkIsEligible(
+        userInfo?.updateAt,
+        Number(process.env.PASSWORD_CHANGE_DAY_LIMIT)
+      );
+
+      if (isEligible) {
+        const isValidPassword = await compare(req.body.oldPassword, userInfo?.password);
+
+        if (isValidPassword) {
+          const hashedPassword = await hash(req.body.newPassword, 10);
+
+          const updatePassword = await UserModel.findOneAndUpdate(
+            { _id: req.body.userId },
+            {
+              $set: {
+                password: hashedPassword,
+                updateAt: new Date(),
+              },
+            }
+          );
+
+          if (updatePassword) res.status(200).json({ message: 'Password change successfully' });
+          else res.status(401).json({ error: 'Something wrong' });
+        } else res.status(401).json({ error: 'Current password is not match' });
+      } else
+        res.status(401).json({
+          error: `To change password need more then ${Number(
+            process.env.PASSWORD_CHANGE_DAY_LIMIT
+          )} days`,
+        });
+    } else next('something wrong');
   } catch {
     res.status(401).json({ error: 'Authentication Failed' });
   }

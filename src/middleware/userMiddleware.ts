@@ -54,3 +54,28 @@ export const loginMiddleware: RequestHandler = (req, res, next) => {
 //   if (userId) next();
 //   else next('User id is not valid');
 // };
+
+// // change password middleware
+export const changePasswordMiddleware: RequestHandler = (req, res, next) => {
+  const reqData = req.body;
+
+  const userId =
+    typeof reqData.userId === 'string' &&
+    reqData.userId.length === 24 &&
+    ObjectId.isValid(reqData.userId)
+      ? reqData.userId
+      : false;
+
+  const oldPassword =
+    typeof reqData.oldPassword === 'string' && reqData.oldPassword.trim().length > 4
+      ? reqData.oldPassword
+      : false;
+
+  const newPassword =
+    typeof reqData.newPassword === 'string' && reqData.newPassword.trim().length > 4
+      ? reqData.newPassword
+      : false;
+
+  if (userId && oldPassword && newPassword) next();
+  else res.status(400).json({ message: 'All fields are required !' });
+};
