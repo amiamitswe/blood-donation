@@ -5,11 +5,13 @@ import {
   loginHandler,
   logoutHandler,
   changePasswordHandler,
+  favoriteDonarHandler,
 } from '../handler/userHandler';
 import {
   signupMiddleware,
   loginMiddleware,
   changePasswordMiddleware,
+  favoriteDonarMiddleware,
 } from '../middleware/userMiddleware';
 
 const router = express.Router();
@@ -24,6 +26,9 @@ router.post('/login', loginMiddleware, loginHandler);
 router.post('/logout', checkLogin, logoutHandler);
 
 // change user password
-router.put('/change-password', changePasswordMiddleware, changePasswordHandler);
+router.put('/change-password', checkLogin, changePasswordMiddleware, changePasswordHandler);
+
+// add favorite donar
+router.put('/favorite-donar', checkLogin, favoriteDonarMiddleware, favoriteDonarHandler);
 
 export default router;

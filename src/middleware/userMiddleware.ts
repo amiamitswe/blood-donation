@@ -79,3 +79,24 @@ export const changePasswordMiddleware: RequestHandler = (req, res, next) => {
   if (userId && oldPassword && newPassword) next();
   else res.status(400).json({ message: 'All fields are required !' });
 };
+
+// Favorite donar Middleware
+export const favoriteDonarMiddleware: RequestHandler = (req, res, next) => {
+  const reqData = req.body;
+  const userId =
+    typeof reqData.userId === 'string' &&
+    reqData.userId.length === 24 &&
+    ObjectId.isValid(reqData.userId)
+      ? reqData.userId
+      : false;
+
+  const donarId =
+    typeof reqData.donarId === 'string' &&
+    reqData.donarId.length === 24 &&
+    ObjectId.isValid(reqData.donarId)
+      ? reqData.donarId
+      : false;
+
+  if (userId && donarId) next();
+  else res.status(400).json({ message: 'All fields are required !' });
+};

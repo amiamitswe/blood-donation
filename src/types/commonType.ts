@@ -32,6 +32,7 @@ interface ISIgnUp {
   password: string;
   username: string;
   role?: ['admin', 'user'];
+  favoriteDonar?: [string]
 }
 
 interface ILogOutToken { expireToken: string; expireAt: Date; }
