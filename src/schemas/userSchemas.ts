@@ -19,6 +19,7 @@ export const userSchemas = new mongoose.Schema<ISIgnUp>({
     type: String,
     required: true,
   },
+  donarId: String,
   favoriteDonar: [String],
   createAt: {
     type: Date,
