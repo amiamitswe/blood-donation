@@ -76,8 +76,18 @@ export const changePasswordMiddleware: RequestHandler = (req, res, next) => {
       ? reqData.newPassword
       : false;
 
-  if (userId && oldPassword && newPassword) next();
-  else res.status(400).json({ message: 'All fields are required !' });
+  const confirmPassword =
+    typeof reqData.confirmPassword === 'string' && reqData.confirmPassword.trim().length > 4
+      ? reqData.confirmPassword
+      : false;
+
+  if (userId && oldPassword && newPassword && confirmPassword) {
+    if (newPassword !== confirmPassword) {
+      res.status(400).json({ message: 'Password does not match' });
+    } else {
+      next();
+    }
+  } else res.status(400).json({ message: 'All fields are required !' });
 };
 
 // Favorite donar Middleware

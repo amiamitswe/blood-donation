@@ -37,9 +37,7 @@ export const signupHandler: RequestHandler = async (req, res, next) => {
       console.log(updateSignUpData.email);
 
       if (result) {
-        // sendEmail()
-        // @ts-ignore
-        signUpEmailTemplate(result?.email, result?.username, result?.createAt);
+        signUpEmailTemplate(result?.email, result?.username, result?.createAt as Date);
         res.status(200).json({
           message: 'User inserted successfully !!!',
           data: {

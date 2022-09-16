@@ -1,6 +1,7 @@
+import { Date } from 'mongoose';
 import { sendEmail } from './emailSend';
 
-export const signUpEmailTemplate = (email: string, username: string, create: string) => {
+export const signUpEmailTemplate = (email: string, username: string, create: Date) => {
   const template = `
     <div style='text-align: center; width: 100%;'>
     <h1>hello ${username}</h1>
