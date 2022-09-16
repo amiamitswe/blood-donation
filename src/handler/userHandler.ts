@@ -6,6 +6,7 @@ import { IDonar, ILogOutToken, ISIgnUp } from '../types/commonType';
 import jwt from 'jsonwebtoken';
 import { checkIsEligible } from '../helper/helper';
 import { donarSchemas } from '../schemas/donarSchemas';
+import { signUpEmailTemplate } from '../utils/signUpEmailTemplate';
 
 // create user model
 const UserModel = mongoose.model<ISIgnUp>('User', userSchemas);
@@ -33,15 +34,25 @@ export const signupHandler: RequestHandler = async (req, res, next) => {
 
       const newUser = new UserModel(updateSignUpData);
       const result = await newUser.save();
+      console.log(updateSignUpData.email);
 
-      res.status(200).json({
-        message: 'User inserted successfully !!!',
-        data: {
-          username: result.username,
-          email: result.email,
-          create: result.createAt,
-        },
-      });
+      if (result) {
+        // sendEmail()
+        // @ts-ignore
+        signUpEmailTemplate(result?.email, result?.username, result?.createAt);
+        res.status(200).json({
+          message: 'User inserted successfully !!!',
+          data: {
+            username: result.username,
+            email: result.email,
+            create: result.createAt,
+          },
+        });
+      } else {
+        res.status(500).json({
+          error: 'There was a server side error !!!',
+        });
+      }
     }
   } catch (err) {
     res.status(500).json({
