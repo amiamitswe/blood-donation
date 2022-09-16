@@ -1,6 +1,6 @@
 import express, { Request, Response, RequestHandler } from 'express';
 import mongoose from 'mongoose';
-import { checkIsEligible, getAge } from '../helper/helper';
+import { checkIsEligible, convertBlood, getAge, regex } from '../helper/helper';
 import { donarSchemas } from '../schemas/donarSchemas';
 import { IDonar } from '../types/commonType';
 
@@ -36,8 +36,12 @@ export const saveDonarHandler: RequestHandler = async (req, res, next) => {
 export const showAllDonarHandler: RequestHandler = async (req, res, next) => {
   try {
     const getAllDonar = await DonarModel.find(
-      {},
-      'name blood status address lastDonation dob image'
+      {
+        name: regex(req.query.name as string),
+        district: regex(req.query.district as string),
+        blood: regex(convertBlood(req.query.blood as string) as string),
+      },
+      'name blood status district lastDonation dob image'
     );
 
     if (getAllDonar && getAllDonar.length > 0) {

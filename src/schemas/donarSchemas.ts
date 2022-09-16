@@ -46,6 +46,10 @@ export const donarSchemas = new mongoose.Schema<IDonar>({
     type: String,
     required: true,
   },
+  district: {
+    type: String,
+    required: true,
+  },
   address: {
     type: String,
     required: true,

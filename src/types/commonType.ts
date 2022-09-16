@@ -13,6 +13,7 @@ interface IDonar {
   status?: ["active", "inactive"],
   aboutMe: string;
   address: string;
+  district: string;
   disease: [
     string
   ],
