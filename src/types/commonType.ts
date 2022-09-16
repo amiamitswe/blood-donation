@@ -1,4 +1,4 @@
-import { Date } from "mongoose";
+import { Date, Schema } from "mongoose";
 
 interface IError { status: number, message: string; }
 interface IDonar {
@@ -33,11 +33,12 @@ interface ISIgnUp {
   password: string;
   username: string;
   role?: ['admin', 'user'];
-  donarId?: string;
-  favoriteDonar?: [string]
+  donarId?: Schema.Types.ObjectId;
+  favoriteDonar?: [Schema.Types.ObjectId]
 }
 
 interface ILogOutToken { expireToken: string; expireAt: Date; }
+interface IFotGotPassToken {userId: Schema.Types.ObjectId, token: string; createdAt: Date; }
 
 
-export { IError, IDonar, ISIgnUp, ILogOutToken };
+export { IError, IDonar, ISIgnUp, ILogOutToken, IFotGotPassToken };

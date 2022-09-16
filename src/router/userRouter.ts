@@ -6,12 +6,14 @@ import {
   logoutHandler,
   changePasswordHandler,
   favoriteDonarHandler,
+  forgotPasswordHandler,
 } from '../handler/userHandler';
 import {
   signupMiddleware,
   loginMiddleware,
   changePasswordMiddleware,
   favoriteDonarMiddleware,
+  forgotPasswordMiddleware,
 } from '../middleware/userMiddleware';
 
 const router = express.Router();
@@ -30,5 +32,15 @@ router.put('/change-password', checkLogin, changePasswordMiddleware, changePassw
 
 // add favorite donar
 router.put('/favorite-donar', checkLogin, favoriteDonarMiddleware, favoriteDonarHandler);
+
+// forgot password request
+router.post('/forgot-password', forgotPasswordMiddleware, forgotPasswordHandler);
+
+// password reset
+router.post('/password-reset/:userId/:token', (req, res) => {
+  console.log(req.params);
+
+  res.end();
+});
 
 export default router;

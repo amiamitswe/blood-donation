@@ -110,3 +110,12 @@ export const favoriteDonarMiddleware: RequestHandler = (req, res, next) => {
   if (userId && donarId) next();
   else res.status(400).json({ message: 'All fields are required !' });
 };
+
+// forgot password middleware
+export const forgotPasswordMiddleware: RequestHandler = (req, res, next) => {
+  const email =
+    typeof req.body.email === 'string' && req.body.email.trim().length > 6 ? req.body.email : false;
+
+  if (email) next();
+  else res.status(400).json({ message: 'All fields are required !' });
+};

@@ -1,17 +1,23 @@
 import e, { RequestHandler } from 'express';
-import mongoose, { Date } from 'mongoose';
+import mongoose, { Date, Schema } from 'mongoose';
+import crypto from 'crypto';
 import { compare, hash } from 'bcrypt';
-import { expireTokenSchemas, userSchemas } from '../schemas/userSchemas';
-import { IDonar, ILogOutToken, ISIgnUp } from '../types/commonType';
+import { expireTokenSchemas, forgotPassTokenSchema, userSchemas } from '../schemas/userSchemas';
+import { IDonar, IFotGotPassToken, ILogOutToken, ISIgnUp } from '../types/commonType';
 import jwt from 'jsonwebtoken';
 import { checkIsEligible } from '../helper/helper';
 import { donarSchemas } from '../schemas/donarSchemas';
 import { signUpEmailTemplate } from '../utils/signUpEmailTemplate';
+import { sendEmail } from '../utils/emailSend';
 
 // create user model
 const UserModel = mongoose.model<ISIgnUp>('User', userSchemas);
 const DonarModel = mongoose.model<IDonar>('Donar', donarSchemas);
 const ExpireTokenModel = mongoose.model<ILogOutToken>('Token', expireTokenSchemas);
+const ForgotPassTokenModel = mongoose.model<IFotGotPassToken>(
+  'ForgotPassToken',
+  forgotPassTokenSchema
+);
 
 // signup functionality
 export const signupHandler: RequestHandler = async (req, res, next) => {
@@ -34,7 +40,6 @@ export const signupHandler: RequestHandler = async (req, res, next) => {
 
       const newUser = new UserModel(updateSignUpData);
       const result = await newUser.save();
-      console.log(updateSignUpData.email);
 
       if (result) {
         signUpEmailTemplate(result?.email, result?.username, result?.createAt as Date);
@@ -176,7 +181,9 @@ export const favoriteDonarHandler: RequestHandler = async (req, res, next) => {
 
       if (getDonar !== null) {
         // get all donars
-        const preFavoriteDonars = [...(userFavoriteDonars?.favoriteDonar as [string])];
+        const preFavoriteDonars = [
+          ...(userFavoriteDonars?.favoriteDonar as [Schema.Types.ObjectId]),
+        ];
 
         // check is current donar is exist or not
         const isDonarExist = userFavoriteDonars?.favoriteDonar?.includes(donarId);
@@ -207,5 +214,44 @@ export const favoriteDonarHandler: RequestHandler = async (req, res, next) => {
     }
   } catch {
     res.status(401).json({ error: 'Authentication Failed !!!!' });
+  }
+};
+
+// forgot password handler
+export const forgotPasswordHandler: RequestHandler = async (req, res, next) => {
+  try {
+    const findUser = await UserModel.findOne({ email: req.body.email }).select({
+      username: 1,
+      email: 1,
+    });
+    if (findUser !== null) {
+      const token = await ForgotPassTokenModel.findOne({ userId: findUser._id });
+
+      if (!token) {
+        const addNewToken = await new ForgotPassTokenModel({
+          userId: findUser._id,
+          token: crypto.randomBytes(32).toString('hex'),
+        }).save();
+
+        if (addNewToken) {
+          const link = `${process.env.BASE_URL}:${process.env.PORT}/user/password-reset/${findUser._id}/${addNewToken.token}`;
+          sendEmail(
+            findUser.email,
+            'Password reset',
+            '',
+            `<p>Please <a href="${link}">Click Here</a> to change password</p>`
+          );
+          res.status(200).json({
+            message: `Email send to ${findUser.email}, Please click the link`,
+            email: findUser.email,
+          });
+        } else res.status(500).json({ error: 'Something wrong' });
+      }
+    } else res.status(401).json({ error: 'User not found' });
+  } catch (err) {
+    res.status(500).json({
+      error: 'There was a server side error !!!',
+      err,
+    });
   }
 };

@@ -9,10 +9,10 @@ export const sendEmail = (
   emailHtml?: string
 ) => {
   const transporter = nodemailer.createTransport({
-    service: 'outlook',
+    service: process.env.EMAIL_SERVICE,
     auth: {
       user: process.env.EMAIL,
-      pass: process.env.EMAILPASSWORD,
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
 
