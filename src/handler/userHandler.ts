@@ -74,7 +74,7 @@ export const loginHandler: RequestHandler = async (req, res, next) => {
             userType: loginUserData.role,
           },
           process.env.JWT_SECRET as string,
-          { expiresIn: '1h' }
+          { expiresIn: '7d' }
         );
         res.status(200).json({ message: 'Login Success!!!', token });
       } else {
