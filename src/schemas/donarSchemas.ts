@@ -9,7 +9,7 @@ export const donarSchemas = new mongoose.Schema<IDonar>({
   image: {
     type: String,
     default:
-      'https://freepngimg.com/thumb/youtube/62644-profile-account-google-icons-computer-user-iconfinder.png',
+      'https://www.pngitem.com/pimgs/m/80-800194_transparent-users-icon-png-flat-user-icon-png.png',
   },
   blood: {
     type: String,
