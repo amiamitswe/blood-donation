@@ -90,12 +90,12 @@ export const loginHandler: RequestHandler = async (req, res, next) => {
           process.env.JWT_SECRET as string,
           { expiresIn: '7d' }
         );
-        res.status(200).json({ message: 'Login Success!!!', token });
+        res.status(200).json({ message: 'Login Success!!!', statusCode: 200, token });
       } else {
-        res.status(401).json({ error: 'Authentication Failed' });
+        res.status(401).json({ error: 'Authentication Failed', statusCode: 401 });
       }
     } else {
-      res.status(401).json({ error: 'Authentication Failed' });
+      res.status(401).json({ error: 'Authentication Failed', statusCode: 401 });
     }
   } catch {
     res.status(401).json({ error: 'Authentication Failed' });

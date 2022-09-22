@@ -1,14 +1,22 @@
 import express, { Request, Response, Application, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import cors from 'cors';
+
 import { IError } from './types/commonType';
 
 import donarRouter from './router/donarRouter';
 import userRouter from './router/userRouter';
 
 const app: Application = express();
+// use json parser
 app.use(express.json());
+
+// dotnet config
 dotenv.config();
+
+// use cors
+app.use(cors());
 
 // app handler
 app.use('/donar/', donarRouter);

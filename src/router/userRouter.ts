@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import checkLogin from '../handler/checkLogin';
 import {
   signupHandler,
@@ -23,7 +22,7 @@ const router = express.Router();
 router.post('/signup', signupMiddleware, signupHandler);
 
 // login user
-router.post('/login', cors(), loginMiddleware, loginHandler);
+router.post('/login', loginMiddleware, loginHandler);
 
 // log out user
 router.post('/logout', checkLogin, logoutHandler);
