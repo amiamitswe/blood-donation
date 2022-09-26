@@ -19,19 +19,19 @@ import {
 } from '../handler/donarHandler';
 import checkLogin from '../handler/checkLogin';
 
-router.get('/', cors(), showAllDonarHandler);
+router.get('/', showAllDonarHandler);
 
-router.get('/about/:donar', cors(), checkLogin, donarDetailsMiddleware, showDonarDetailsHandler);
+router.get('/about/:donar', checkLogin, donarDetailsMiddleware, showDonarDetailsHandler);
 
-router.post('/add', cors(), checkLogin, addDonarMiddleware, saveDonarHandler);
+router.post('/add', checkLogin, addDonarMiddleware, saveDonarHandler);
 
-router.put('/change-status', cors(), checkLogin, updateDonarStatusMiddleware, changeStatusHandler);
+router.put('/change-status', checkLogin, updateDonarStatusMiddleware, changeStatusHandler);
 
-router.put('/change-image', cors(), checkLogin, updateDonarImageMiddleware, changeImageHandler);
+router.put('/change-image', checkLogin, updateDonarImageMiddleware, changeImageHandler);
 
 router.patch(
   '/update-profile/:donar',
-  cors(),
+
   checkLogin,
   updateDonarMiddleware,
   updateProfileHandler
